@@ -7,6 +7,7 @@ import {
   Query,
   UseGuards,
   Param,
+  Delete,
 } from '@nestjs/common';
 import { GoalsService } from './goals.service';
 import { CreateGoalDto } from './dto/create-goal.dto';
@@ -39,5 +40,10 @@ export class GoalsController {
     @GetUser() user: any,
   ) {
     return this.goalsService.updateStatus(id, status, user);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string, @GetUser() user: any) {
+    return this.goalsService.remove(id, user);
   }
 }

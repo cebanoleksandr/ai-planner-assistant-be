@@ -30,6 +30,7 @@ export class TasksService {
       .createQueryBuilder('task')
       .leftJoinAndSelect('task.goal', 'goal')
       .leftJoinAndSelect('goal.lifeArea', 'lifeArea')
+      .addOrderBy('task.createdAt', 'ASC')
       .where('task.userId = :userId', { userId: user.userId });
 
     if (startDate && endDate) {
@@ -56,5 +57,16 @@ export class TasksService {
     if (!task) throw new NotFoundException('Задача не найдена');
     task.isCompleted = !task.isCompleted;
     return this.taskRepository.save(task);
+  }
+
+  async remove(id: string, user: any): Promise<void> {
+    const result = await this.taskRepository.delete({
+      id,
+      user: { id: user.userId },
+    });
+
+    if (result.affected === 0) {
+      throw new NotFoundException('Задача не найдена');
+    }
   }
 }

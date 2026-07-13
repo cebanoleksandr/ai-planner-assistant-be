@@ -7,6 +7,7 @@ import {
   Query,
   UseGuards,
   Param,
+  Delete,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -36,5 +37,10 @@ export class TasksController {
   @Patch(':id/toggle')
   toggleComplete(@Param('id') id: string, @GetUser() user: any) {
     return this.tasksService.toggleComplete(id, user);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string, @GetUser() user: any) {
+    return this.tasksService.remove(id, user);
   }
 }

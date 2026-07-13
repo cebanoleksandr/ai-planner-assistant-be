@@ -29,6 +29,7 @@ export class GoalsService {
     const query = this.goalRepository
       .createQueryBuilder('goal')
       .leftJoinAndSelect('goal.lifeArea', 'lifeArea')
+      .leftJoinAndSelect('goal.tasks', 'tasks')
       .where('goal.userId = :userId', { userId: user.userId });
 
     if (lifeAreaId) {
@@ -52,5 +53,16 @@ export class GoalsService {
     if (!goal) throw new NotFoundException('Цель не найдена');
     goal.status = status;
     return this.goalRepository.save(goal);
+  }
+
+  async remove(id: string, user: any): Promise<void> {
+    const result = await this.goalRepository.delete({
+      id,
+      user: { id: user.userId },
+    });
+
+    if (result.affected === 0) {
+      throw new NotFoundException('Цель не найдена');
+    }
   }
 }
