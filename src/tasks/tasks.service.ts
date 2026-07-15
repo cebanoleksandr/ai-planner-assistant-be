@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { Task } from './entities/task.entity';
+import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Injectable()
 export class TasksService {
@@ -54,8 +55,28 @@ export class TasksService {
     const task = await this.taskRepository.findOne({
       where: { id, user: { id: user.userId } },
     });
-    if (!task) throw new NotFoundException('Задача не найдена');
+    if (!task) throw new NotFoundException('Task not found');
     task.isCompleted = !task.isCompleted;
+    return this.taskRepository.save(task);
+  }
+
+  async update(id: string, updateDto: UpdateTaskDto, user: any): Promise<Task> {
+    const task = await this.taskRepository.findOne({
+      where: { id, user: { id: user.userId } },
+    });
+
+    if (!task) {
+      throw new NotFoundException('Task not found');
+    }
+
+    const { goalId, ...rest } = updateDto;
+
+    Object.assign(task, rest);
+
+    if (goalId !== undefined) {
+      task.goal = goalId ? ({ id: goalId } as any) : null;
+    }
+
     return this.taskRepository.save(task);
   }
 
@@ -66,7 +87,7 @@ export class TasksService {
     });
 
     if (result.affected === 0) {
-      throw new NotFoundException('Задача не найдена');
+      throw new NotFoundException('Task not found');
     }
   }
 }

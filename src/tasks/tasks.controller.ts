@@ -13,6 +13,7 @@ import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
+import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Controller('tasks')
 @UseGuards(JwtAuthGuard)
@@ -37,6 +38,15 @@ export class TasksController {
   @Patch(':id/toggle')
   toggleComplete(@Param('id') id: string, @GetUser() user: any) {
     return this.tasksService.toggleComplete(id, user);
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateDto: UpdateTaskDto,
+    @GetUser() user: any,
+  ) {
+    return this.tasksService.update(id, updateDto, user);
   }
 
   @Delete(':id')

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateGoalDto } from './dto/create-goal.dto';
 import { Goal } from './entities/goal.entity';
+import { UpdateGoalDto } from './dto/update-goal.dto';
 
 @Injectable()
 export class GoalsService {
@@ -52,6 +53,26 @@ export class GoalsService {
     });
     if (!goal) throw new NotFoundException('Цель не найдена');
     goal.status = status;
+    return this.goalRepository.save(goal);
+  }
+
+  async update(id: string, updateDto: UpdateGoalDto, user: any): Promise<Goal> {
+    const goal = await this.goalRepository.findOne({
+      where: { id, user: { id: user.userId } },
+    });
+
+    if (!goal) {
+      throw new NotFoundException('Цель не найдена');
+    }
+
+    const { lifeAreaId, ...rest } = updateDto;
+
+    Object.assign(goal, rest);
+
+    if (lifeAreaId !== undefined) {
+      goal.lifeArea = lifeAreaId ? ({ id: lifeAreaId } as any) : null;
+    }
+
     return this.goalRepository.save(goal);
   }
 

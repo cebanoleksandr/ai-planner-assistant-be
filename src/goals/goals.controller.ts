@@ -13,6 +13,7 @@ import { GoalsService } from './goals.service';
 import { CreateGoalDto } from './dto/create-goal.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
+import { UpdateGoalDto } from './dto/update-goal.dto';
 
 @Controller('goals')
 @UseGuards(JwtAuthGuard)
@@ -40,6 +41,15 @@ export class GoalsController {
     @GetUser() user: any,
   ) {
     return this.goalsService.updateStatus(id, status, user);
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateDto: UpdateGoalDto,
+    @GetUser() user: any,
+  ) {
+    return this.goalsService.update(id, updateDto, user);
   }
 
   @Delete(':id')
