@@ -10,7 +10,7 @@ export class ChatService {
     private readonly configService: ConfigService,
   ) {}
 
-  async sendMessage(message: string, user: any): Promise<any> {
+  async sendMessage(message: string, user: any, token: string): Promise<any> {
     const n8nWebhookUrl = this.configService.get<string>('N8N_WEBHOOK_URL');
 
     try {
@@ -19,10 +19,11 @@ export class ChatService {
           message,
           userId: user.userId,
           email: user.email,
+          token,
           timestamp: new Date().toISOString(),
         }),
       );
-      return response.data;
+      return response.data.message;
     } catch (error) {
       console.error('Ошибка при запросе к n8n:', error.message);
       throw new InternalServerErrorException(
