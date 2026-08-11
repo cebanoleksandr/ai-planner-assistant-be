@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { Task } from './entities/task.entity';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import axios from 'axios';
 
 @Injectable()
 export class TasksService {
@@ -88,6 +89,44 @@ export class TasksService {
 
     if (result.affected === 0) {
       throw new NotFoundException('Task not found');
+    }
+  }
+
+  async optimizeTasks(userId: string) {
+    const tasks = await this.taskRepository.find({
+      where: {
+        user: { id: userId },
+      },
+    });
+
+    try {
+      const n8nWebhookUrl = process.env.N8N_AI_OPTIMIZE_WEBHOOK_URL;
+
+      if (!n8nWebhookUrl) {
+        throw new Error(
+          'N8N_AI_OPTIMIZE_WEBHOOK_URL is not defined in environment variables',
+        );
+      }
+
+      const response = await axios.post(n8nWebhookUrl, {
+        userId,
+        tasks,
+      });
+
+      const n8nResult = response.data;
+
+      return {
+        message: n8nResult.message || 'Tasks optimized successfully via n8n',
+        optimizedTasks: n8nResult.optimizedTasks || tasks,
+      };
+    } catch (error) {
+      console.error('Failed to communicate with n8n workflow:', error.message);
+
+      return {
+        message:
+          'AI optimization service is temporarily unavailable, returning original tasks.',
+        optimizedTasks: tasks,
+      };
     }
   }
 }

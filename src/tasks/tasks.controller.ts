@@ -53,4 +53,9 @@ export class TasksController {
   remove(@Param('id') id: string, @GetUser() user: any) {
     return this.tasksService.remove(id, user);
   }
+
+  @Post('optimize')
+  async optimizeTasks(@GetUser() user: any) {
+    return this.tasksService.optimizeTasks(user.id);
+  }
 }
