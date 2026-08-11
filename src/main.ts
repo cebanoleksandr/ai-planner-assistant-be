@@ -7,7 +7,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:5173', // локальная разработка (Vite)
-      'https://cebanoleksandr.github.io/ai-planner-assistant-fe', // прод-домен фронта
+      'https://cebanoleksandr.github.io', // прод-домен фронта
     ],
     credentials: true, // если используешь cookies/сессии
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
