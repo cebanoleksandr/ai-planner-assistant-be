@@ -4,14 +4,7 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors({
-    origin: [
-      'http://localhost:5173',
-      'https://dispatch-deport-favorite.ngrok-free.dev',
-    ],
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: true,
-  });
+  app.enableCors({ origin: '*' });
 
   await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
 }
